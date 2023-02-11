@@ -11,3 +11,10 @@ All you need to do is save your changes.
 
 This makes the development workflow faster as you do not have to restart the entire app every time an asset is changed. 
 
+## Install 
+
+Ververser is available via PyPI:
+
+```
+pip install ververser
+```
