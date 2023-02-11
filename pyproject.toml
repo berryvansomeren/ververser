@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pyglet_base"
+name = "ververser"
 version = "0.1.0"
 description = ""
 authors = ["Berry <berryvansomeren@gmail.com>"]
@@ -7,8 +7,6 @@ authors = ["Berry <berryvansomeren@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.10"
 pyglet = "^2.0.0"
-numpy = "^1.23.5"
-pygame = "^2.1.2"
 
 [tool.poetry.dev-dependencies]
 
