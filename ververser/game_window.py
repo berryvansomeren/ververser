@@ -4,10 +4,10 @@ from time import time, sleep
 
 import pyglet
 
-from fps_counter import FPSCounter
+from ververser.asset_manager import AssetManager, ReloadStatus
+from ververser.fps_counter import FPSCounter
+from ververser.script import load_script
 
-from asset_manager import AssetManager, ReloadStatus
-from script import load_script
 
 logger = logging.getLogger(__name__)
 

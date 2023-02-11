@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from game_window import GameWindow
+from ververser.game_window import GameWindow
 
 
 if __name__ == '__main__':

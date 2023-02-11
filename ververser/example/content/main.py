@@ -1,5 +1,7 @@
 from typing import Optional
-from game_window import GameWindow
+
+from ververser.game_window import GameWindow
+
 from pyglet.gl import glClearColor
 
 

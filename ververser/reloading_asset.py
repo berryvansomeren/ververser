@@ -1,7 +1,7 @@
 from enum import Enum, auto
 import logging
 
-from file_watcher import FileWatcher
+from ververser.file_watcher import FileWatcher
 
 
 class ReloadStatus(Enum):

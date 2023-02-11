@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Callable
 
-from reloading_asset import ReloadingAsset, ReloadStatus
+from ververser.reloading_asset import ReloadingAsset, ReloadStatus
 
 
 AssetLoaderType = Callable[ [ Path ], Any ]
