@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ververser"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["Berry <berryvansomeren@gmail.com>"]
 
