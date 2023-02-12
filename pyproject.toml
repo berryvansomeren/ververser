@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "ververser"
 version = "0.1.5"
-description = ""
+description = "A lightweight wrapper around pyglet that allows hot-reloading of assets."
 authors = ["Berry <berryvansomeren@gmail.com>"]
 
 [tool.poetry.dependencies]
