@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys
 from typing import Any, Callable
 
 from ververser.reloading_asset import ReloadingAsset, ReloadStatus
@@ -42,7 +43,7 @@ class AssetManager:
         complete_asset_path = self.make_asset_path_complete( asset_path )
         return complete_asset_path.is_file()
 
-    def load( self, asset_path : Path ) -> ( Any, ReloadStatus ):
+    def load( self, asset_path : Path ) -> ReloadingAsset:
         absolute_asset_path = self.make_asset_path_complete( asset_path )
         assert self.exists( absolute_asset_path ), f'Could not load asset. File path: "{asset_path}"'
         asset_loader = self.get_asset_loader_for_file( asset_path )
@@ -51,5 +52,5 @@ class AssetManager:
             file_path = absolute_asset_path
         )
         self.assets.append(reloading_asset)
-        load_status = reloading_asset.try_reload()
-        return reloading_asset, load_status
+        reloading_asset.try_reload()
+        return reloading_asset

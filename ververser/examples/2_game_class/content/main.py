@@ -1,18 +1,18 @@
-from typing import Optional
-
-from ververser.game_window import GameWindow
-
 from pyglet.gl import glClearColor
+import random
+from typing import Optional
+from ververser import GameWindow
 
 
 class Game:
 
     def __init__( self, game_window : GameWindow ):
         self.game_window = game_window
-        glClearColor( 255 / 255, 10 / 255, 10 / 255, 1.0 )  # red, green, blue, and alpha(transparency)
 
     def update( self, dt ):
-        ...
+        random_range = 0.1
+        green = 0.5 + (( random_range * random.uniform(0, 1) ) - 0.5 * random_range )
+        glClearColor( 0, green, 0, 1.0 )
 
     def draw( self ):
         ...

@@ -29,8 +29,8 @@ class GameWindow( pyglet.window.Window ):
 
         self.asset_manager = AssetManager( asset_folder_path )
         self.asset_manager.register_asset_loader( '.py', lambda p : load_script( p, self ) )
-        self.main_script, load_status = self.asset_manager.load( EXPECTED_MAIN_SCRIPT_NAME )
-        assert load_status == ReloadStatus.RELOADED, 'Could not load main script from example folder. Quitting.'
+        self.main_script = self.asset_manager.load( EXPECTED_MAIN_SCRIPT_NAME )
+        assert self.main_script.reload_status == ReloadStatus.RELOADED, 'Could not load main script from example folder. Quitting.'
 
         self.is_initialised = False
         self.is_paused = False

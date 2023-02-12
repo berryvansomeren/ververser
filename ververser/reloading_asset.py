@@ -16,20 +16,20 @@ class ReloadingAsset:
         self.f_load_asset = f_load_asset
         self.file_watcher = FileWatcher(file_path)
 
-    def try_reload( self ) -> ReloadStatus:
+    def try_reload( self ) -> None:
         if not self.file_watcher.is_file_updated():
             self.reload_status = ReloadStatus.NOT_CHANGED
-            return self.reload_status
+            return
         asset_path = self.file_watcher.file_path
         try:
             self.asset = self.f_load_asset( asset_path )
         except Exception as e :
             logging.error( f'Encountered an error during loading of asset from file "{asset_path}"' )
-            logging.error( e )
+            logging.exception( e )
             self.reload_status = ReloadStatus.FAILED
-            return self.reload_status
+            return
         self.reload_status =  ReloadStatus.RELOADED
-        return self.reload_status
+        return
 
     def get( self ):
         return self.asset
