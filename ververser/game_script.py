@@ -9,7 +9,7 @@ def invoke_if_available( f, *args, **kwargs ):
         f(*args, **kwargs)
 
 
-class Script:
+class GameScript:
 
     def __init__( self, file_path : Path, game ):
         self.file_path = file_path
@@ -32,4 +32,4 @@ class Script:
 
 
 def load_script( script_path : Path, game ) -> Any:
-    return Script( script_path, game )
+    return GameScript( script_path, game )

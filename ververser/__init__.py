@@ -3,4 +3,4 @@ from .file_watcher import FileWatcher
 from .fps_counter import FPSCounter
 from .game_window import GameWindow
 from .reloading_asset import ReloadingAsset, ReloadStatus
-from .script import Script
+from .game_script import GameScript
