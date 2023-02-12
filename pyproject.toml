@@ -2,7 +2,7 @@
 name = "ververser"
 version = "0.1.5"
 description = "A lightweight wrapper around pyglet that allows hot-reloading of assets."
-authors = ["Berry <berryvansomeren@gmail.com>"]
+authors = ["Berry van Someren"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
