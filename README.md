@@ -15,7 +15,9 @@ This is especially useful for creative coding.
 
 ## Examples
 
-Vervser comes with a few examples, and is being tested in a few external projects. More examples will follow soon.
+Vervser comes with a few examples. Please see _ververser/examples_.  
+Every example comes with its own readme, explaining things from a minimal setup, 
+to how scripts can be imported in such a way that they will be properly reloaded on changes.
 
 ## Install 
 
