@@ -1,22 +1,22 @@
 import logging
 from pathlib import Path
 from time import time, sleep
+from typing import Optional
 
 import pyglet
 
 from ververser.asset_manager import AssetManager, ReloadStatus
 from ververser.fps_counter import FPSCounter
-from ververser.game_script import load_script
+from ververser.main_script import MainScript
+from ververser.global_game_window import set_global_game_window
 
 
 logger = logging.getLogger(__name__)
 
-EXPECTED_MAIN_SCRIPT_NAME = Path( 'main.py' )
-
 
 class GameWindow( pyglet.window.Window ):
 
-    def __init__( self, asset_folder_path : Path, throttle_fps = 30 ):
+    def __init__( self, asset_folder_path : Path, throttle_fps = 30, make_global = True ):
         super().__init__(vsync = False)
 
         self.throttle_fps = throttle_fps
@@ -27,16 +27,14 @@ class GameWindow( pyglet.window.Window ):
         self.last_update = time()
         self.fps_counter = FPSCounter()
 
-        self.asset_manager = AssetManager( asset_folder_path )
-        self.asset_manager.register_asset_loader( '.py', lambda p : load_script( p, self ) )
-        self.main_script = self.asset_manager.load( EXPECTED_MAIN_SCRIPT_NAME )
-        assert self.main_script.reload_status == ReloadStatus.RELOADED, 'Could not load main script from example folder. Quitting.'
-
-        self.is_initialised = False
         self.is_paused = False
         self.has_asset_problem = False
 
-        self.init()
+        self.asset_manager = AssetManager( asset_folder_path, self )
+        self.main_script : Optional[ MainScript ] = None
+
+        if make_global:
+            set_global_game_window( self )
 
     def on_close(self):
         self.alive = False
@@ -103,10 +101,10 @@ class GameWindow( pyglet.window.Window ):
     # ================ Overload the methods below! ================
 
     def init( self ):
-        ...
+        self.main_script = self.asset_manager.load_main_script()
 
     def update( self, dt ):
-        self.try_invoke( lambda : self.main_script.get().update( dt ) )
+        self.try_invoke( lambda : self.main_script.vvs_update( dt ) )
 
     def draw( self ):
-        self.try_invoke( lambda : self.main_script.get().draw() )
+        self.try_invoke( lambda : self.main_script.vvs_draw() )

@@ -1,5 +1,6 @@
 from enum import Enum, auto
 import logging
+from typing import Any
 
 from ververser.file_watcher import FileWatcher
 
@@ -16,6 +17,9 @@ class ReloadingAsset:
         self.f_load_asset = f_load_asset
         self.file_watcher = FileWatcher(file_path)
 
+    def __getattr__( self, name : str ) -> Any:
+        return getattr( self.get(), name )
+
     def try_reload( self ) -> None:
         if not self.file_watcher.is_file_updated():
             self.reload_status = ReloadStatus.NOT_CHANGED
@@ -31,5 +35,7 @@ class ReloadingAsset:
         self.reload_status =  ReloadStatus.RELOADED
         return
 
-    def get( self ):
+    def get( self ) -> Any:
         return self.asset
+
+

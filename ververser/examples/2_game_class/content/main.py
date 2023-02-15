@@ -11,8 +11,8 @@ class Game:
 
     def update( self, dt ):
         random_range = 0.1
-        green = 0.5 + (( random_range * random.uniform(0, 1) ) - 0.5 * random_range )
-        glClearColor( 0, green, 0, 1.0 )
+        r = 0.5 + (( random_range * random.uniform(0, 1) ) - 0.5 * random_range )
+        glClearColor( 0, r, 0, 1.0 )
 
     def draw( self ):
         ...
@@ -23,12 +23,12 @@ class Game:
 
 _GAME : Optional[ Game ] = None
 
-def init( game_window : GameWindow ):
+def vvs_init( game_window : GameWindow ):
     global _GAME
     _GAME = Game( game_window )
 
-def update( dt ):
+def vvs_update( dt ):
     _GAME.update( dt )
 
-def draw():
+def vvs_draw():
     _GAME.draw()

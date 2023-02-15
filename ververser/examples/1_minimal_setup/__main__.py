@@ -5,7 +5,5 @@ from ververser import GameWindow
 
 if __name__ == '__main__':
     logging.basicConfig( level = logging.INFO )
-    game = GameWindow(
-        asset_folder_path = Path( __file__ ).parent / 'content'
-    )
+    game = GameWindow( Path( __file__ ).parent / 'content' )
     game.run()
