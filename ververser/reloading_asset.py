@@ -18,7 +18,7 @@ class ReloadingAsset:
         self.file_watcher = FileWatcher(file_path)
 
     def __getattr__( self, name : str ) -> Any:
-        return getattr( self.get(), name )
+        return getattr( self.asset, name )
 
     def try_reload( self ) -> None:
         if not self.file_watcher.is_file_updated():
