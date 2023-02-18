@@ -4,6 +4,7 @@ from ververser import GameWindow, import_script
 game = import_script( 'game.py' )
 Game = game.Game
 
+
 # --------
 # This is just some boilerplate that makes it easier to use a custom Game class
 

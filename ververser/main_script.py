@@ -1,5 +1,9 @@
+import logging
 from pathlib import Path
 from runpy import run_path
+
+
+logger = logging.getLogger(__name__)
 
 
 class MainScript:
@@ -27,4 +31,9 @@ class MainScript:
 
 
 def load_main_script( script_path : Path, game_window ) -> MainScript:
-    return MainScript( script_path, game_window )
+    main_script = None
+    try :
+        main_script = MainScript( script_path, game_window )
+    except Exception as e :
+        logger.exception( f'Encountered an error during loading of main script "{script_path}". Exception: {e}' )
+    return main_script

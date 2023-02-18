@@ -1,8 +1,6 @@
 from pathlib import Path
 from runpy import run_path
 
-from ververser.global_game_window import get_global_game_window
-
 
 class Script:
 
@@ -16,7 +14,3 @@ class Script:
 
 def load_script( script_path : Path ) -> Script:
     return Script( script_path )
-
-
-def import_script( script_path : str ) -> Script:
-    return get_global_game_window().asset_manager.load( script_path )

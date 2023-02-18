@@ -6,9 +6,9 @@ class FileWatcher:
 
     def __init__( self, file_path: Path ):
         self.file_path = file_path
-        self.last_seen_time_modified = None
+        self.last_seen_time_modified = self.get_last_time_modified()
 
-    def get_last_time_modified( self ):
+    def get_last_time_modified( self ) -> float:
         return os.path.getmtime( self.file_path )
 
     def is_file_updated( self ) -> bool:

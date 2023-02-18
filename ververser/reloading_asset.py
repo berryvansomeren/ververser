@@ -5,7 +5,10 @@ from typing import Any
 from ververser.file_watcher import FileWatcher
 
 
-class ReloadStatus(Enum):
+logger = logging.getLogger(__name__)
+
+
+class LoadStatus( Enum ):
     NOT_CHANGED = auto()
     RELOADED = auto()
     FAILED = auto()
@@ -22,17 +25,16 @@ class ReloadingAsset:
 
     def try_reload( self ) -> None:
         if not self.file_watcher.is_file_updated():
-            self.reload_status = ReloadStatus.NOT_CHANGED
+            self.reload_status = LoadStatus.NOT_CHANGED
             return
         asset_path = self.file_watcher.file_path
         try:
             self.asset = self.f_load_asset( asset_path )
         except Exception as e :
-            logging.error( f'Encountered an error during loading of asset from file "{asset_path}"' )
-            logging.exception( e )
-            self.reload_status = ReloadStatus.FAILED
+            logger.exception( f'Encountered an error during loading of asset from file "{asset_path}". Exception: {e}' )
+            self.reload_status = LoadStatus.FAILED
             return
-        self.reload_status =  ReloadStatus.RELOADED
+        self.reload_status =  LoadStatus.RELOADED
         return
 
     def get( self ) -> Any:
