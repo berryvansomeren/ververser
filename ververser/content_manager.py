@@ -88,7 +88,7 @@ class ContentManager:
     def _load_asset( self, absolute_asset_path ) -> ReloadingAsset :
         asset_loader = self.get_asset_loader_for_file( absolute_asset_path )
         reloading_asset = ReloadingAsset(
-            f_load_asset = lambda path : asset_loader( path ),
+            f_load_asset = asset_loader,
             file_path = absolute_asset_path
         )
         self.reloading_assets.append( reloading_asset )
