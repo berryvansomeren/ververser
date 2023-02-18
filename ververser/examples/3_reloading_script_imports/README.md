@@ -12,12 +12,11 @@ Ververser therefore wraps scripts as objects when importing them.
 When reloading a script, the imported script objects will be removed by the garbage collection, 
 and replaced with new instances, effectively doing a proper reload of the module. 
 
-Note that ververser intentionally does not try to do anything clever for reloading modules. 
-Ververser is not aware of dependencies between scripts/modules. 
+Ververser only reloads scripts that are actually imported by other scripts. 
+However, ververser intentionally does not try to do anything clever for reloading modules. 
+Ververser is not aware of dependencies between scripts/modules.
 Simply, when a python file is changed, the entire program as served by ververser is re-initialised. 
 This might mean your entire program reboots while you only meant to change a minor thing.
 This is something that might be tackled in later versions of ververser.
-
-Also Note that the note above, talks specifically about reloading scripts. 
-Reloading other types of assets will not result in a full reload. 
-
+This is specifically true for reloading scripts. 
+Reloading other types of assets will not result in a full reload, but will just reload that specific asset.  
