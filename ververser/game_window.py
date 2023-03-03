@@ -35,18 +35,18 @@ class GameWindow( pyglet.window.Window ):
 
     # ================ State affectors ================
 
-    def on_close(self):
+    def on_close(self) -> None:
         self.alive = False
 
-    def quit( self ):
+    def quit( self ) -> None:
         self.alive = False
 
-    def restart( self ):
+    def restart( self ) -> None:
         self.requires_init = True
 
     # ================ Run game loop ================
 
-    def run(self):
+    def run(self) -> None:
         while self.alive:
             # dispatch all OS events
             self.dispatch_events()
@@ -111,44 +111,51 @@ class GameWindow( pyglet.window.Window ):
 
     # ---------------- Functions that wrap standard game hooks  ----------------
 
-    def _init( self ):
-        init_success = self.init()
-        if not init_success:
+    def _init( self ) -> None:
+        success = self.try_invoke( self.init, 'Game Initialisation' )
+        if not success:
             self.has_init_problem = True
         else:
             self.has_init_problem = False
             self.requires_init = False
             self.has_content_problem = False
 
-    def _update( self, dt ):
+    def _update( self, dt ) -> None:
         self.fps_counter.update()
 
-    def _draw_start( self ):
+    def _draw_start( self ) -> None:
         self.clear()
 
-    def _draw_end( self ):
+    def _draw_end( self ) -> None:
         self.fps_counter.draw()
         self.flip()
         self.frame_count += 1
 
     # ---------------- Convenience Functions ----------------
-    def try_invoke( self, f ):
+    def try_invoke( self, f, current_task : str ) -> bool:
+        success = True
         try :
             f()
         except Exception as e:
-            logger.exception( f'Error occurred during script invokation. Game is now paused! Exception: {e}' )
-            self.has_content_problem = True
+            logger.exception( f'Exception: {e}' )
+            logger.error( f'∧∧∧ Error occurred during {current_task}. Game is now paused! ∧∧∧' )
+            success = False
+        return success
 
     # ================ End of standard boilerplate ================
     # ================ Overload the methods below! ================
 
-    def init( self ) -> bool:
+    def init( self ) -> None:
         self.asset_manager.script_watcher.clear()
         self.main_script = self.asset_manager.load_main_script( self )
-        return self.main_script is not None
+        assert self.main_script
 
-    def update( self, dt ):
-        self.try_invoke( lambda : self.main_script.vvs_update( dt ) )
+    def update( self, dt ) -> None:
+        success = self.try_invoke( lambda : self.main_script.vvs_update( dt ), 'Game Update' )
+        if not success:
+            self.has_content_problem = True
 
-    def draw( self ):
-        self.try_invoke( lambda : self.main_script.vvs_draw() )
+    def draw( self ) -> None:
+        success = self.try_invoke( self.main_script.vvs_draw, 'Game Draw' )
+        if not success :
+            self.has_content_problem = True

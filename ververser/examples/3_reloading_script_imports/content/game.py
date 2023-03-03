@@ -10,7 +10,6 @@ class Game:
         self.total_time = 0
 
     def update( self, dt ):
-        random_range = 0.1
         self.total_time += dt
         g = 0.25 + 0.25 * (math.sin( self.total_time ) + 1)
         glClearColor( 0, g, 0, 1.0 )
