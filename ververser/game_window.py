@@ -136,7 +136,7 @@ class GameWindow( pyglet.window.Window ):
         success = True
         try :
             f()
-        except Exception as e:
+        except BaseException as e:
             logger.exception( f'Exception: {e}' )
             logger.error( f'∧∧∧ Error occurred during {current_task}. Game is now paused! ∧∧∧' )
             success = False
