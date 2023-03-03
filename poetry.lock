@@ -1,6 +1,6 @@
 [[package]]
 name = "pyglet"
-version = "2.0.4"
+version = "2.0.5"
 description = "Cross-platform windowing and multimedia library"
 category = "main"
 optional = false
@@ -9,10 +9,10 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "6862427abc5aa8412e67473f1fb1dcfe138d3afa972918fc89daac1cb0fa2746"
+content-hash = "b68b6d38c65c2cc30e1416e022cfc31d5e39394756b330c22de1fb08ef65c6e9"
 
 [metadata.files]
 pyglet = [
-    {file = "pyglet-2.0.4-py3-none-any.whl", hash = "sha256:74a82ee184a673ef019200a5b7a528e95ea41ac32f6c227d2a333ab9ea0ff56d"},
-    {file = "pyglet-2.0.4.zip", hash = "sha256:f891808c1bf65c7cc5131b0b26b047eae5cf37c7e253270964ac4b2f014774f2"},
+    {file = "pyglet-2.0.5-py3-none-any.whl", hash = "sha256:b0b94d0a3f9d0016bee506566fd13d7c62b5b9d10b6e16d32765d654959ba4dc"},
+    {file = "pyglet-2.0.5.zip", hash = "sha256:c47ff4eded95104d030e0697eedd6082b61dc987460bbca83ec47b6e7cbfd38a"},
 ]

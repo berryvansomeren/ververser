@@ -64,7 +64,7 @@ class GameWindow( pyglet.window.Window ):
             # try to initialise the game
             # if a problem is encountered, then end the frame early
             if self.requires_init:
-                self.init()
+                self._init()
                 if self.has_init_problem:
                     continue
 
@@ -111,6 +111,15 @@ class GameWindow( pyglet.window.Window ):
 
     # ---------------- Functions that wrap standard game hooks  ----------------
 
+    def _init( self ):
+        init_success = self.init()
+        if not init_success:
+            self.has_init_problem = True
+        else:
+            self.has_init_problem = False
+            self.requires_init = False
+            self.has_content_problem = False
+
     def _update( self, dt ):
         self.fps_counter.update()
 
@@ -133,15 +142,10 @@ class GameWindow( pyglet.window.Window ):
     # ================ End of standard boilerplate ================
     # ================ Overload the methods below! ================
 
-    def init( self ):
+    def init( self ) -> bool:
         self.asset_manager.script_watcher.clear()
         self.main_script = self.asset_manager.load_main_script( self )
-        if not self.main_script:
-            self.has_init_problem = True
-        else:
-            self.has_init_problem = False
-            self.requires_init = False
-            self.has_content_problem = False
+        return self.main_script is not None
 
     def update( self, dt ):
         self.try_invoke( lambda : self.main_script.vvs_update( dt ) )
