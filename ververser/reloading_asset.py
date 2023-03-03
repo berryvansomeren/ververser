@@ -25,6 +25,9 @@ class ReloadingAsset:
     def __getattr__( self, name : str ) -> Any:
         return getattr( self.asset, name )
 
+    def __bool__(self) -> bool:
+        return bool( self.asset )
+
     def try_reload( self ) -> None:
         if not self.file_watcher.is_file_updated():
             self.reload_status = LoadStatus.NOT_CHANGED
@@ -32,7 +35,7 @@ class ReloadingAsset:
         asset_path = self.file_watcher.file_path
         try:
             self.asset = self.f_load_asset( asset_path )
-        except Exception as e :
+        except BaseException as e :
             logger.exception( f'Encountered an error during loading of asset from file "{asset_path}". Exception: {e}' )
             self.reload_status = LoadStatus.FAILED
             self.asset = None
