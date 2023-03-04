@@ -25,7 +25,7 @@ class MultiFileWatcher:
         modification_time = max( all_modification_times )
         return modification_time
 
-    def is_any_file_updated( self ) -> bool:
+    def is_any_file_modified( self ) -> bool:
         last_time_modified = self.get_last_time_modified()
         is_updated = False
         if last_time_modified != self.last_seen_time_modified:

@@ -51,10 +51,12 @@ class GameWindow( pyglet.window.Window ):
             # dispatch all OS events
             self.dispatch_events()
 
-            # if there was a problem with initialisation and no script was modified yet,
+            # if there was a problem with initialisation and no content was modified yet,
             # then there is no need to retry initialisation
             is_any_script_updated = self.asset_manager.is_any_script_updated()
-            if self.has_init_problem and not is_any_script_updated:
+            is_any_asset_updated = self.asset_manager.is_any_asset_updated()
+            is_any_content_updated = is_any_script_updated or is_any_asset_updated
+            if self.has_init_problem and not is_any_content_updated:
                 continue
 
             # if any script files are updated we require reinitialisation
@@ -137,7 +139,7 @@ class GameWindow( pyglet.window.Window ):
         try :
             f()
         except BaseException as e:
-            logger.exception( f'Exception: {e}' )
+            logger.exception( f'Caught an Exception: {e}' )
             logger.error( f'∧∧∧ Error occurred during {current_task}. Game is now paused! ∧∧∧' )
             success = False
         return success

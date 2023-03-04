@@ -14,11 +14,10 @@ class FileWatcher:
     def get_last_time_modified( self ) -> float:
         return os.path.getmtime( self.file_path )
 
-    def is_file_updated( self ) -> bool:
+    def is_file_modified( self ) -> bool:
         last_time_modified = self.get_last_time_modified()
-        is_updated = False
-        if last_time_modified != self.last_seen_time_modified:
-            is_updated = True
-            self.last_seen_time_modified = last_time_modified
-            print(f'File was updated! - {self.file_path} - Timestamp: {self.last_seen_time_modified}')
-        return is_updated
+        return last_time_modified != self.last_seen_time_modified
+
+    def update_last_seen_time_modified( self ):
+        last_time_modified = self.get_last_time_modified()
+        self.last_seen_time_modified = last_time_modified

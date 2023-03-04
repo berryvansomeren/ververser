@@ -70,7 +70,7 @@ class ContentManager:
     # ======== Script related functions ========
 
     def is_any_script_updated( self ) -> bool:
-        return self.script_watcher.is_any_file_updated()
+        return self.script_watcher.is_any_file_modified()
 
     def load_main_script( self, game_window ) -> MainScript:
         absolute_script_path = self.make_content_path_complete( EXPECTED_MAIN_SCRIPT_NAME )
@@ -92,17 +92,23 @@ class ContentManager:
             file_path = absolute_asset_path
         )
         self.reloading_assets.append( reloading_asset )
-        reloading_asset.try_reload()
         return reloading_asset
+
+    def is_any_asset_updated( self ) -> bool:
+        for reloading_asset in self.reloading_assets:
+            if reloading_asset.is_modified():
+                return True
+        return False
 
     def try_reload_assets( self ) -> LoadStatus:
         overall_load_status = LoadStatus.NOT_CHANGED
         for reloading_asset in self.reloading_assets:
-            reloading_asset.try_reload()
-            load_status = reloading_asset.reload_status
-            if load_status == LoadStatus.RELOADED:
+            if not reloading_asset.is_modified():
+                continue
+            reload_status = reloading_asset.reload()
+            if reload_status == LoadStatus.RELOADED:
                 overall_load_status = LoadStatus.RELOADED
-            if load_status == LoadStatus.FAILED:
+            if reload_status == LoadStatus.FAILED:
                 return LoadStatus.FAILED
         return overall_load_status
 

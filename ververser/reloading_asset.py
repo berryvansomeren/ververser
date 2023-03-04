@@ -16,11 +16,12 @@ class LoadStatus( Enum ):
 
 class ReloadingAsset:
 
-    def __init__(self, f_load_asset, file_path):
+    def __init__( self, f_load_asset, file_path, load_now = True ):
         self.f_load_asset = f_load_asset
-        self.file_watcher = FileWatcher( file_path, record_now = False )
         self.asset = None
-        self.try_reload()
+        self.file_watcher = FileWatcher( file_path, record_now = load_now )
+        if load_now:
+            self.reload()
 
     def __getattr__( self, name : str ) -> Any:
         return getattr( self.asset, name )
@@ -28,10 +29,10 @@ class ReloadingAsset:
     def __bool__(self) -> bool:
         return bool( self.asset )
 
-    def try_reload( self ) -> None:
-        if not self.file_watcher.is_file_updated():
-            self.reload_status = LoadStatus.NOT_CHANGED
-            return
+    def is_modified( self ) -> bool:
+        return self.file_watcher.is_file_modified()
+
+    def reload( self ) -> None:
         asset_path = self.file_watcher.file_path
         try:
             self.asset = self.f_load_asset( asset_path )
@@ -40,10 +41,12 @@ class ReloadingAsset:
             self.reload_status = LoadStatus.FAILED
             self.asset = None
             return
-        self.reload_status =  LoadStatus.RELOADED
-        return
+        self.file_watcher.update_last_seen_time_modified()
+        self.reload_status = LoadStatus.RELOADED
 
-    def get( self ) -> Any:
-        return self.asset
-
-
+    def try_reload( self ) -> None:
+        if self.is_modified():
+            logger.info( f'File was modified! - {self.file_path} - Timestamp: {self.last_seen_time_modified}' )
+            self.reload()
+        else:
+            self.reload_status = LoadStatus.NOT_CHANGED
