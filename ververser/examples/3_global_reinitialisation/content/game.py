@@ -1,3 +1,6 @@
+print( f'Imported {__file__}' )
+
+
 import math
 from pyglet.gl import glClearColor
 from ververser import GameWindow

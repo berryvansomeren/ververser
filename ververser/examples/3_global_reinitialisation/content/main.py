@@ -1,5 +1,9 @@
+print( f'Imported {__file__}' )
+
+
 from typing import Optional
 from ververser import GameWindow, import_script
+
 
 game = import_script( 'game.py' )
 Game = game.Game

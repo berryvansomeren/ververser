@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class GameWindow( pyglet.window.Window ):
 
-    def __init__( self, asset_folder_path : Path, throttle_fps = 30 ):
+    def __init__( self, content_folder_path : Path, throttle_fps = 30 ):
         super().__init__(vsync = False)
 
         self.throttle_fps = throttle_fps
@@ -30,7 +30,7 @@ class GameWindow( pyglet.window.Window ):
         self.has_init_problem = False
         self.has_content_problem = False
 
-        self.asset_manager = ContentManager( asset_folder_path )
+        self.content_manager = ContentManager( content_folder_path )
         self.main_script : Optional[ MainScript ] = None
 
     # ================ State affectors ================
@@ -55,8 +55,8 @@ class GameWindow( pyglet.window.Window ):
             # then there is no need to retry initialisation.
             # Note that it can happen that a script initializer throws an error, because of an asset issue.
             # That's why we also check for updated assets here, and not only scripts.
-            is_any_script_updated = self.asset_manager.is_any_script_updated()
-            is_any_asset_updated = self.asset_manager.is_any_asset_updated()
+            is_any_script_updated = self.content_manager.is_any_script_updated()
+            is_any_asset_updated = self.content_manager.is_any_asset_updated()
             is_any_content_updated = is_any_script_updated or is_any_asset_updated
             if self.has_init_problem and not is_any_content_updated:
                 continue
@@ -77,7 +77,7 @@ class GameWindow( pyglet.window.Window ):
 
             # Now that scripts have been handled,
             # we will try to reload assets (which is done only if they have been modified)
-            reload_status = self.asset_manager.try_reload_assets()
+            reload_status = self.content_manager.try_reload_assets()
             if reload_status == LoadStatus.FAILED :
                 logger.info( "Error occured during asset loading. Game is now paused!" )
                 self.has_content_problem = True
@@ -153,8 +153,8 @@ class GameWindow( pyglet.window.Window ):
     # ================ Overload the methods below! ================
 
     def init( self ) -> None:
-        self.asset_manager.script_watcher.clear()
-        self.main_script = self.asset_manager.load_main_script( self )
+        self.content_manager.script_watcher.clear()
+        self.main_script = self.content_manager.load_main_script( self )
         assert self.main_script
 
     def update( self, dt ) -> None:
@@ -170,4 +170,8 @@ class GameWindow( pyglet.window.Window ):
     def exit( self ):
         if not self.main_script:
             return
-        self.try_invoke( self.main_script.vvs_exit, 'Game Exit' )
+        try :
+            self.main_script.vvs_exit()
+        except BaseException as e:
+            logger.exception( f'Caught an Exception: {e}' )
+            logger.error( f'∧∧∧ Error occurred during Game Exit. Game will be reinitialized, but your state will be lost ∧∧∧' )
