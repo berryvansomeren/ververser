@@ -19,3 +19,6 @@ def vvs_update( dt ):
 
 def vvs_draw():
     _GAME.draw()
+
+def vvs_exit():
+    _GAME.exit()

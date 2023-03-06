@@ -52,7 +52,9 @@ class GameWindow( pyglet.window.Window ):
             self.dispatch_events()
 
             # if there was a problem with initialisation and no content was modified yet,
-            # then there is no need to retry initialisation
+            # then there is no need to retry initialisation.
+            # Note that it can happen that a script initializer throws an error, because of an asset issue.
+            # That's why we also check for updated assets here, and not only scripts.
             is_any_script_updated = self.asset_manager.is_any_script_updated()
             is_any_asset_updated = self.asset_manager.is_any_asset_updated()
             is_any_content_updated = is_any_script_updated or is_any_asset_updated
@@ -61,6 +63,7 @@ class GameWindow( pyglet.window.Window ):
 
             # if any script files are updated we require reinitialisation
             if is_any_script_updated:
+                self.exit()
                 self.requires_init = True
 
             # try to initialise the game
@@ -111,10 +114,12 @@ class GameWindow( pyglet.window.Window ):
             self.draw()
             self._draw_end()
 
+        self.exit()
+
     # ---------------- Functions that wrap standard game hooks  ----------------
 
     def _init( self ) -> None:
-        success = self.try_invoke( self.init, 'Game Initialisation' )
+        success = self.try_invoke( self.init, 'Game Init' )
         if not success:
             self.has_init_problem = True
         else:
@@ -153,11 +158,16 @@ class GameWindow( pyglet.window.Window ):
         assert self.main_script
 
     def update( self, dt ) -> None:
-        success = self.try_invoke( lambda : self.main_script.vvs_update( dt ), 'Game Update' )
-        if not success:
+        was_update_successful = self.try_invoke( lambda : self.main_script.vvs_update( dt ), 'Game Update' )
+        if not was_update_successful:
             self.has_content_problem = True
 
     def draw( self ) -> None:
-        success = self.try_invoke( self.main_script.vvs_draw, 'Game Draw' )
-        if not success :
+        was_draw_successful = self.try_invoke( self.main_script.vvs_draw, 'Game Draw' )
+        if not was_draw_successful :
             self.has_content_problem = True
+
+    def exit( self ):
+        if not self.main_script:
+            return
+        self.try_invoke( self.main_script.vvs_exit, 'Game Exit' )

@@ -18,6 +18,9 @@ class Game:
     def draw( self ):
         ...
 
+    def exit( self ):
+        ...
+
 
 # --------
 # This is just some boilerplate that makes it easier to use a custom Game class
@@ -33,3 +36,6 @@ def vvs_update( dt ):
 
 def vvs_draw():
     _GAME.draw()
+
+def vvs_exit():
+    _GAME.exit()

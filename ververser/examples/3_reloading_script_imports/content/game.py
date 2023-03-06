@@ -16,3 +16,6 @@ class Game:
 
     def draw( self ):
         ...
+
+    def exit( self ):
+        ...
