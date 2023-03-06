@@ -69,7 +69,7 @@ If you want to preserve some state between reloads,
 you could consider writing state to file in vvs_exit, and reading it back in, in vvs_init. 
 By managing script reloads as described in the previous section you can also minimize the amount of lost state.
 
-### Some note on exit errors
+### Some notes on exit errors
 Note that there is no way to recover from errors in vvs_exit, 
 as the code can not be hot-reloaded while keeping state, 
 if your custom mechanism that is responsible for preserving state, is the thing that crashes...
