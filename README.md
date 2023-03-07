@@ -82,3 +82,5 @@ as your new code is not loaded yet.
 Ververser comes with a few examples that can be found in _ververser/examples_.  
 Every example comes with its own readme, explaining things from a minimal setup, 
 to how scripts can be imported in such a way that they will be properly reloaded on changes.
+
+Another example of what can be achieved with ververser is [**speelgrond**](https://github.com/berryvansomeren/speelgrond)
