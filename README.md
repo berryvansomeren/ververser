@@ -26,7 +26,6 @@ The **MainScript** class supports entrypoints for game applications through **vv
 These functions will be called by the ververser host at the right moments in the game loop.
 
 ### Why we bypass Python's internal import mechanics
-While you can use regular import statements in your scripts, their content will not be hot-reloaded. 
 There are a few issues when trying to reload modules in Python. 
 Python does not allow us to easily and completely unload modules, 
 and uses an internal cache to prevent reloads of modules that have been loaded before. 
@@ -61,7 +60,7 @@ the reference will not be updated when the module with the function definition i
 However, referencing through the Script class does work, 
 because the Script class will retrieve the definition anew, for every "get".
 
-Finally, note that if you do not want to ever hot-reload a module at all, 
+Finally, note that if you do not want to hot-reload a module at all, 
 you can of course still use normal python imports.
 
 ### Preserving state
@@ -79,7 +78,7 @@ the error might still be logged, because on reload, the previously defined versi
 as your new code is not loaded yet. 
 
 ## Examples
-Ververser comes with a few examples that can be found in _ververser/examples_.  
+Ververser comes with a few examples that can be found in _ververser/examples_. 
 Every example comes with its own readme, explaining things from a minimal setup, 
 to how scripts can be imported in such a way that they will be properly reloaded on changes.
 
