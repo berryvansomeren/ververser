@@ -7,7 +7,9 @@ import pyglet
 
 from ververser.content_manager import ContentManager, LoadStatus
 from ververser.fps_counter import FPSCounter
+from ververser.keyboard import Keyboard
 from ververser.main_script import MainScript
+from ververser.mouse import Mouse
 
 
 logger = logging.getLogger(__name__)
@@ -32,6 +34,16 @@ class GameWindow( pyglet.window.Window ):
 
         self.content_manager = ContentManager( content_folder_path )
         self.main_script : Optional[ MainScript ] = None
+
+        self.keyboard = Keyboard()
+        self.push_handlers( self.keyboard.get_handler() )
+
+        self.mouse = Mouse()
+        self.push_handlers( self.mouse.get_handler() )
+
+    # ================ Events ================
+    def on_draw(self, dt):
+        self.draw()
 
     # ================ State affectors ================
 

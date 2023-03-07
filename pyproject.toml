@@ -1,12 +1,13 @@
 [tool.poetry]
 name = "ververser"
-version = "0.1.15"
+version = "0.1.16"
 description = "A lightweight wrapper around pyglet that allows hot-reloading of content."
 authors = ["Berry van Someren"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
 pyglet = "^2.0.5"
+numpy = "^1.24.2"
 
 [tool.poetry.dev-dependencies]
 
