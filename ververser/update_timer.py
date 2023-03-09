@@ -1,16 +1,16 @@
-from time import perf_counter
+from time import time
 
 
 class UpdateTimer:
 
     def __init__(self):
-        self.start = perf_counter()
+        self.start = time()
 
     def get_elapsed_time( self ) -> float:
-        now = perf_counter()
+        now = time()
         return now - self.start
 
     def restart( self ) -> float:
         elapsed_time = self.get_elapsed_time()
-        self.start = perf_counter()
+        self.start = time()
         return elapsed_time
