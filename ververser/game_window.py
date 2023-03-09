@@ -9,7 +9,7 @@ from ververser.fps_counter import FPSCounter
 from ververser.keyboard import Keyboard
 from ververser.main_script import MainScript
 from ververser.mouse import Mouse
-from ververser.update_timer import UpdateTimer
+from ververser.update_stepper import UpdateStepper
 
 
 logger = logging.getLogger(__name__)
@@ -21,12 +21,9 @@ class GameWindow( pyglet.window.Window ):
         super().__init__( vsync = False, **kwargs )
 
         self.target_fps = throttle_fps
-        self.frame_count = 0
         self.fps_counter = FPSCounter()
-        self.update_timer = UpdateTimer()
         self.frame_time = 1 / self.target_fps
-        self.remaining_time_to_consume = 0
-        self.max_updates = 5
+        self.update_stepper = UpdateStepper( frame_time = self.frame_time )
 
         self.alive = True
         self.is_paused = False
@@ -108,14 +105,8 @@ class GameWindow( pyglet.window.Window ):
             # we do not know necessarily if those are caused by scripts or assets,
             # so we just call them content problems
 
-            # we choose to use fixed size timesteps because they result in more stable physics
-            dt = self.update_timer.restart()
-            self.remaining_time_to_consume += dt
-            n_updates = 0
-            while self.remaining_time_to_consume >= self.frame_time and n_updates < self.max_updates:
-                self.remaining_time_to_consume -= self.frame_time
-                n_updates += 1
-
+            self.update_stepper.produce()
+            while self.update_stepper.consume():
                 self._update(self.frame_time)
                 self.update(self.frame_time)
 
@@ -145,7 +136,6 @@ class GameWindow( pyglet.window.Window ):
     def _draw_end( self ) -> None:
         self.fps_counter.draw()
         self.flip()
-        self.frame_count += 1
 
     # ---------------- Convenience Functions ----------------
     def try_invoke( self, f, current_task : str ) -> bool:
