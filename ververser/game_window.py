@@ -17,18 +17,19 @@ logger = logging.getLogger(__name__)
 
 class GameWindow( pyglet.window.Window ):
 
-    def __init__( self, content_folder_path : Path, throttle_fps = 30 ):
-        super().__init__(vsync = False)
+    def __init__( self, content_folder_path : Path, throttle_fps = 60, **kwargs ):
+        super().__init__( vsync = False, **kwargs )
 
-        self.throttle_fps = throttle_fps
+        self.target_fps = throttle_fps
         self.frame_count = 0
         self.last_update = time()
         self.fps_counter = FPSCounter()
+        self.frame_time = 1 / self.target_fps
+        self.remaining_time_to_consume = 0
 
         self.alive = True
         self.is_paused = False
         self.requires_init = True
-
         self.has_init_problem = False
         self.has_content_problem = False
 
@@ -106,25 +107,20 @@ class GameWindow( pyglet.window.Window ):
             # we do not know necessarily if those are caused by scripts or assets,
             # so we just call them content problems
 
+            # we choose to use fixed size timesteps because they result in more stable physics
             now = time()
             dt = now - self.last_update
             self.last_update = now
+            self.remaining_time_to_consume += dt
+            while self.remaining_time_to_consume >= self.frame_time:
+                self.remaining_time_to_consume -= self.frame_time
 
-            if self.throttle_fps:
-                sleep_time = ( 1 / self.throttle_fps ) - dt
-                sleep( max( sleep_time, 0 ) )
+                self._update(self.frame_time)
+                self.update(self.frame_time)
 
-            # TODO:
-            # we do not want the framerate to affect physics
-            # easiest way to do that is fix the dt here for now
-            dt = 1/60
-
-            self._update(dt)
-            self.update(dt)
-
-            self._draw_start()
-            self.draw()
-            self._draw_end()
+                self._draw_start()
+                self.draw()
+                self._draw_end()
 
         self.exit()
 
