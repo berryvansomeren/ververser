@@ -87,9 +87,7 @@ class ContentManager:
     def try_reload_assets( self ) -> LoadStatus :
         overall_load_status = LoadStatus.NOT_CHANGED
         for reloading_asset in self.reloading_assets :
-            if not reloading_asset.is_modified() :
-                continue
-            reload_status = reloading_asset.reload()
+            reload_status = reloading_asset.try_reload()
             if reload_status == LoadStatus.RELOADED :
                 overall_load_status = LoadStatus.RELOADED
             if reload_status == LoadStatus.FAILED :
