@@ -3,9 +3,9 @@ from ververser.update_timer import UpdateTimer
 
 class UpdateStepper:
 
-    def __init__( self, frame_time, max_updates = 5 ):
+    def __init__( self, frame_time, max_catchup_updates ):
         self.frame_time = frame_time
-        self.max_updates = max_updates
+        self.max_updates = max_catchup_updates
 
         self.update_timer = UpdateTimer()
         self.remaining_time_to_consume = 0
@@ -22,7 +22,11 @@ class UpdateStepper:
         # consume time by running game updates
         # we choose to use fixed size timesteps because they result in more stable physics
         # you want limit the number of consecutive updates in case you used a breakpoint,
-        # and to prevent situations where your application might otherwise never catch up
+        # and to prevent situations where your application might otherwise never catch up.
+        # In a next update the app might still try to catch up to a delay from a previous update though.
+        # this will result in your app temporarily responding slowly to input events, and perhaps lower framerate
+        # If issues are not temporary but consistent, your target fps is probably too high,
+        # (or your performance too bad...)
         has_time_to_consume = self.remaining_time_to_consume >= self.frame_time
         has_steps_to_consume = self.n_updates < self.max_updates
         can_step = has_time_to_consume and has_steps_to_consume
