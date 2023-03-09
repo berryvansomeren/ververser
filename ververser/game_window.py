@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path
-from time import time, sleep
 from typing import Optional
 
 import pyglet
@@ -10,6 +9,7 @@ from ververser.fps_counter import FPSCounter
 from ververser.keyboard import Keyboard
 from ververser.main_script import MainScript
 from ververser.mouse import Mouse
+from ververser.update_timer import UpdateTimer
 
 
 logger = logging.getLogger(__name__)
@@ -22,10 +22,11 @@ class GameWindow( pyglet.window.Window ):
 
         self.target_fps = throttle_fps
         self.frame_count = 0
-        self.last_update = time()
         self.fps_counter = FPSCounter()
+        self.update_timer = UpdateTimer()
         self.frame_time = 1 / self.target_fps
         self.remaining_time_to_consume = 0
+        self.max_updates = 5
 
         self.alive = True
         self.is_paused = False
@@ -108,12 +109,12 @@ class GameWindow( pyglet.window.Window ):
             # so we just call them content problems
 
             # we choose to use fixed size timesteps because they result in more stable physics
-            now = time()
-            dt = now - self.last_update
-            self.last_update = now
+            dt = self.update_timer.restart()
             self.remaining_time_to_consume += dt
-            while self.remaining_time_to_consume >= self.frame_time:
+            n_updates = 0
+            while self.remaining_time_to_consume >= self.frame_time and n_updates < self.max_updates:
                 self.remaining_time_to_consume -= self.frame_time
+                n_updates += 1
 
                 self._update(self.frame_time)
                 self.update(self.frame_time)
