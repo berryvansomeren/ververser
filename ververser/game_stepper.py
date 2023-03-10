@@ -1,13 +1,13 @@
-from ververser.update_timer import UpdateTimer
+from ververser.timer import Timer
 
 
-class UpdateStepper:
+class GameStepper:
 
     def __init__( self, frame_time, max_catchup_updates ):
         self.frame_time = frame_time
         self.max_updates = max_catchup_updates
 
-        self.update_timer = UpdateTimer()
+        self.update_timer = Timer()
         self.remaining_time_to_consume = 0
         self.n_updates = 0
 

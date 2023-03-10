@@ -13,7 +13,6 @@ class Game:
         self.game_window = game_window
         self.total_time = 0
 
-
     def update( self, dt ):
         if self.game_window.keyboard.is_down( key.SPACE ):
             color = self._use_mouse_for_color()
@@ -21,14 +20,12 @@ class Game:
             color = self._use_keyboard_for_color()
         glClearColor( color[0], color[1], color[2], 1.0 )
 
-
     def _use_mouse_for_color( self ) -> Color:
         mouse_pos = self.game_window.mouse.get_position()
         size = self.game_window.size
         cx = mouse_pos[0] / size[0]
         cy = mouse_pos[1] / size[1]
         return ( cx, cy, 0. )
-
 
     def _use_keyboard_for_color( self ) -> Color:
         color = ( 0., 0., 0. )

@@ -1,7 +1,7 @@
 from time import time
 
 
-class UpdateTimer:
+class Timer:
 
     def __init__(self):
         self.start = time()

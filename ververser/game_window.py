@@ -9,7 +9,7 @@ from ververser.fps_counter import FPSCounter
 from ververser.keyboard import Keyboard
 from ververser.main_script import MainScript
 from ververser.mouse import Mouse
-from ververser.update_stepper import UpdateStepper
+from ververser.game_stepper import GameStepper
 
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ class GameWindow( pyglet.window.Window ):
         self.target_fps = max_fps
         self.fps_counter = FPSCounter()
         self.frame_time = 1 / self.target_fps
-        self.update_stepper = UpdateStepper(
+        self.game_stepper = GameStepper(
             frame_time = self.frame_time,
             max_catchup_updates = max_catchup_updates
         )
@@ -60,23 +60,29 @@ class GameWindow( pyglet.window.Window ):
 
     # ================ Run game loop ================
 
+    def _should_skip_tick( self ) -> bool:
+        # if there was a problem with initialisation and no content was modified yet,
+        # then there is no need to retry initialisation.
+        # Note that it can happen that a script initializer throws an error, because of an asset issue.
+        # That's why we also check for updated assets here, and not only scripts.
+        is_any_script_updated = self.content_manager.is_any_script_updated()
+        is_any_asset_updated = self.content_manager.is_any_asset_updated()
+        is_any_content_updated = is_any_script_updated or is_any_asset_updated
+        return self.has_init_problem and not is_any_content_updated
+
+    def _should_reinitialise( self ) -> bool:
+        # if any script files are updated we require reinitialisation
+        return self.content_manager.is_any_script_updated()
+
     def run(self) -> None:
         while self.alive:
             # dispatch all OS events
             self.dispatch_events()
 
-            # if there was a problem with initialisation and no content was modified yet,
-            # then there is no need to retry initialisation.
-            # Note that it can happen that a script initializer throws an error, because of an asset issue.
-            # That's why we also check for updated assets here, and not only scripts.
-            is_any_script_updated = self.content_manager.is_any_script_updated()
-            is_any_asset_updated = self.content_manager.is_any_asset_updated()
-            is_any_content_updated = is_any_script_updated or is_any_asset_updated
-            if self.has_init_problem and not is_any_content_updated:
+            if self._should_skip_tick():
                 continue
 
-            # if any script files are updated we require reinitialisation
-            if is_any_script_updated:
+            if self._should_reinitialise():
                 self.exit()
                 self.requires_init = True
 
@@ -88,34 +94,29 @@ class GameWindow( pyglet.window.Window ):
                     continue
 
             # by now we know our scripts are properly initialised
-
             # Now that scripts have been handled,
             # we will try to reload assets (which is done only if they have been modified)
             reload_status = self.content_manager.try_reload_assets()
             if reload_status == LoadStatus.FAILED :
-                logger.info( "Error occured during asset loading. Game is now paused!" )
+                logger.info( "Error occurred during asset loading. Game is now paused!" )
                 self.has_content_problem = True
                 continue
-            else :
+            else:
                 if reload_status == LoadStatus.RELOADED :
                     self.has_content_problem = False
 
             if self.is_paused or self.has_content_problem:
                 continue
 
-            # by this point we have accepted the game should just continue running normally
-            # during update and draw we might still encounter problems
-            # we do not know necessarily if those are caused by scripts or assets,
+            # By this point we have accepted the game should just continue running normally
+            # during update and draw we might still encounter problems though.
+            # We do not know necessarily if those are caused by scripts or assets,
             # so we just call them content problems
 
-            self.update_stepper.produce()
-            while self.update_stepper.consume():
-                self._update(self.frame_time)
-                self.update(self.frame_time)
-
-                self._draw_start()
-                self.draw()
-                self._draw_end()
+            self.game_stepper.produce()
+            while self.game_stepper.consume():
+                self._update()
+                self._draw()
 
         self.exit()
 
@@ -130,8 +131,22 @@ class GameWindow( pyglet.window.Window ):
             self.requires_init = False
             self.has_content_problem = False
 
-    def _update( self, dt ) -> None:
+    def _update( self ) -> None:
+        self._update_start()
+        self.update( self.frame_time )
+        self._update_end()
+
+    def _update_start( self ) -> None:
         self.fps_counter.update()
+
+    def _update_end( self ) -> None:
+        self.keyboard.update()
+        self.mouse.update()
+
+    def _draw( self ) -> None:
+        self._draw_start()
+        self.draw()
+        self._draw_end()
 
     def _draw_start( self ) -> None:
         self.clear()
