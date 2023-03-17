@@ -1,6 +1,9 @@
+import logging
 from pathlib import Path
-from typing import Optional
 from ververser.file_watcher import FileWatcher
+
+
+logger = logging.getLogger(__name__)
 
 
 class MultiFileWatcher:
@@ -31,5 +34,5 @@ class MultiFileWatcher:
         if last_time_modified != self.last_seen_time_modified:
             is_updated = True
             self.last_seen_time_modified = last_time_modified
-            print( f'MultiFileWatcher with name "{self.name}" was updated - Timestamp: {self.last_seen_time_modified}' )
+            logger.info( f'MultiFileWatcher with name "{self.name}" was updated - Timestamp: {self.last_seen_time_modified}' )
         return is_updated

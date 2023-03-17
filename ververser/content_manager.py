@@ -118,10 +118,10 @@ class ContentManager:
 
         absolute_entrypoint_path = None
         entrypoint_wrapper = None
-        for wrapper_name, load_function in entry_point_wrappers.items():
+        for wrapper_name, f_load in entry_point_wrappers.items():
             if self.exists( wrapper_name ) :
                 absolute_entrypoint_path = self.make_path_complete( wrapper_name )
-                entrypoint_wrapper = load_function( absolute_entrypoint_path, game_window )
+                entrypoint_wrapper = f_load( absolute_entrypoint_path, game_window )
                 break
         assert entrypoint_wrapper, 'Could not find entrypoints'
 
@@ -147,5 +147,3 @@ class ContentManager:
         )
         self.reloading_assets.append( reloading_asset )
         return reloading_asset
-
-

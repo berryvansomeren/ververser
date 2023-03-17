@@ -1,3 +1,4 @@
+import logging
 from pyglet.gl import glClearColor
 import pyglet.window.key as key
 from ververser import GameWindow, host_this_folder
@@ -5,6 +6,7 @@ import numpy as np
 
 
 if __name__ == '__main__':
+    logging.basicConfig( level = logging.INFO )
     host_this_folder()
 
 

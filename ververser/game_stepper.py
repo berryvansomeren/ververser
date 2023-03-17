@@ -21,7 +21,7 @@ class GameStepper:
     def consume( self ) -> bool:
         # consume time by running game updates
         # we choose to use fixed size timesteps because they result in more stable physics
-        # you want limit the number of consecutive updates in case you used a breakpoint,
+        # you want to limit the number of consecutive updates in case you used a breakpoint,
         # and to prevent situations where your application might otherwise never catch up.
         # In a next update the app might still try to catch up to a delay from a previous update though.
         # this will result in your app temporarily responding slowly to input events, and perhaps lower framerate
