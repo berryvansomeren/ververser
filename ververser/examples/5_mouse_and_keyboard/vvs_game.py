@@ -1,19 +1,23 @@
 from pyglet.gl import glClearColor
 import pyglet.window.key as key
-from ververser import GameWindow
+from ververser import GameWindow, host_this_folder
 import numpy as np
+
+
+if __name__ == '__main__':
+    host_this_folder()
 
 
 Color = tuple[ float, float, float ]
 
 
-class Game:
+class VVSGame:
 
     def __init__( self, game_window : GameWindow ):
         self.game_window = game_window
         self.total_time = 0
 
-    def update( self, dt ):
+    def vvs_update( self, dt ):
         if self.game_window.keyboard.is_down( key.SPACE ):
             color = self._use_mouse_for_color()
         else:

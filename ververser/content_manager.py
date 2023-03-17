@@ -2,18 +2,15 @@ from pathlib import Path
 from typing import Any, Callable
 
 from ververser.reloading_asset import ReloadingAsset, LoadStatus
-from ververser.main_script import load_main_script, MainScript
+from ververser.entrypoint_wrapper import load_main_script, load_game_class, EntrypointWrapper
 from ververser.multi_file_watcher import MultiFileWatcher
 from ververser.script import load_script, Script
-
-
-ScriptType = MainScript | Script
-ContentType = ScriptType | ReloadingAsset
 
 AssetLoaderType = Callable[ [ Path ], Any ]
 
 EXPECTED_SCRIPT_EXTENSION = '.py'
-EXPECTED_MAIN_SCRIPT_NAME = Path( 'main.py' )
+EXPECTED_MAIN_SCRIPT_NAME = Path( 'vvs_main.py' )
+EXPECTED_GAME_SCRIPT_NAME = Path( 'vvs_game.py' )
 
 
 def is_script_path( path : Path ) -> bool:
@@ -46,14 +43,10 @@ class ContentManager:
         self.asset_loaders : list[ tuple[ str, AssetLoaderType ] ] = []
         self.reloading_assets : list[ ReloadingAsset ] = []
 
-        self.script_watcher.add_file_watch( self.make_path_complete( EXPECTED_MAIN_SCRIPT_NAME ) )
-
     # ======== Generic functions ========
 
     def make_path_complete( self, content_path : Path ) -> Path:
         absolute_content_path = self.content_folder_path / content_path
-        if not absolute_content_path.is_file():
-            raise ValueError( f'Content file does not exist. File path: "{absolute_content_path}"' )
         return absolute_content_path
 
     def exists( self, asset_path ) -> bool:
@@ -113,11 +106,27 @@ class ContentManager:
     def is_any_script_updated( self ) -> bool:
         return self.script_watcher.is_any_file_modified()
 
-    def load_main_script( self, game_window ) -> MainScript:
-        absolute_script_path = self.make_path_complete( EXPECTED_MAIN_SCRIPT_NAME )
-        main_script = load_main_script( absolute_script_path, game_window )
-        self.script_watcher.add_file_watch( absolute_script_path )
-        return main_script
+    def load_entrypoint_wrapper( self, game_window ) -> EntrypointWrapper:
+
+        # first try to find a main script
+        # otherwise try to find a game class
+
+        entry_point_wrappers = {
+            EXPECTED_MAIN_SCRIPT_NAME : load_main_script,
+            EXPECTED_GAME_SCRIPT_NAME : load_game_class,
+        }
+
+        absolute_entrypoint_path = None
+        entrypoint_wrapper = None
+        for wrapper_name, load_function in entry_point_wrappers.items():
+            if self.exists( wrapper_name ) :
+                absolute_entrypoint_path = self.make_path_complete( wrapper_name )
+                entrypoint_wrapper = load_function( absolute_entrypoint_path, game_window )
+                break
+        assert entrypoint_wrapper, 'Could not find entrypoints'
+
+        self.script_watcher.add_file_watch( absolute_entrypoint_path )
+        return entrypoint_wrapper
 
     def load_script( self, script_path : Path, reinit_on_mod = True ) -> Script | ReloadingAsset:
         absolute_script_path = self.make_path_complete( script_path )

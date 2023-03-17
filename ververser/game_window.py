@@ -7,7 +7,7 @@ import pyglet
 from ververser.content_manager import ContentManager, LoadStatus
 from ververser.fps_counter import FPSCounter
 from ververser.keyboard import Keyboard
-from ververser.main_script import MainScript
+from ververser.entrypoint_wrapper import MainScript
 from ververser.mouse import Mouse
 from ververser.game_stepper import GameStepper
 
@@ -35,7 +35,7 @@ class GameWindow( pyglet.window.Window ):
         self.has_content_problem = False
 
         self.content_manager = ContentManager( content_folder_path )
-        self.main_script : Optional[ MainScript ] = None
+        self.entrypoint_wrapper : Optional[ MainScript ] = None
 
         self.keyboard = Keyboard()
         self.push_handlers( self.keyboard.get_handler() )
@@ -171,24 +171,24 @@ class GameWindow( pyglet.window.Window ):
 
     def init( self ) -> None:
         self.content_manager.script_watcher.clear()
-        self.main_script = self.content_manager.load_main_script( self )
-        assert self.main_script
+        self.entrypoint_wrapper = self.content_manager.load_entrypoint_wrapper( self )
+        assert self.entrypoint_wrapper
 
     def update( self, dt ) -> None:
-        was_update_successful = self.try_invoke( lambda : self.main_script.vvs_update( dt ), 'Game Update' )
+        was_update_successful = self.try_invoke( lambda : self.entrypoint_wrapper.vvs_update( dt ), 'Game Update' )
         if not was_update_successful:
             self.has_content_problem = True
 
     def draw( self ) -> None:
-        was_draw_successful = self.try_invoke( self.main_script.vvs_draw, 'Game Draw' )
+        was_draw_successful = self.try_invoke( self.entrypoint_wrapper.vvs_draw, 'Game Draw' )
         if not was_draw_successful :
             self.has_content_problem = True
 
     def exit( self ):
-        if not self.main_script:
+        if not self.entrypoint_wrapper:
             return
         try :
-            self.main_script.vvs_exit()
+            self.entrypoint_wrapper.vvs_exit()
         except BaseException as e:
             logger.exception( f'Caught an Exception: {e}' )
             logger.error( f'∧∧∧ Error occurred during Game Exit. Game will be reinitialized, but your state will be lost ∧∧∧' )
