@@ -11,6 +11,6 @@ from .entrypoint_wrapper import MainScript
 from .make_global_game_window import make_global_game_window
 from .mouse import Mouse
 from .multi_file_watcher import MultiFileWatcher
-from .reloading_asset import ReloadingAsset, LoadStatus
+from .reloading_asset import ReloadingAsset, ReloadStatus
 from .script import load_script, Script
 from .timer import Timer

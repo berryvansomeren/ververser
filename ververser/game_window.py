@@ -4,7 +4,7 @@ from typing import Optional
 
 import pyglet
 
-from ververser.content_manager import ContentManager, LoadStatus
+from ververser.content_manager import ContentManager, ReloadStatus
 from ververser.fps_counter import FPSCounter
 from ververser.keyboard import Keyboard
 from ververser.entrypoint_wrapper import MainScript
@@ -61,23 +61,31 @@ class GameWindow( pyglet.window.Window ):
     # ================ Run game loop ================
 
     def _should_skip_tick( self ) -> bool:
+        if not self.has_init_problem:
+            return False
+
         # if there was a problem with initialisation and no content was modified yet,
         # then there is no need to retry initialisation.
         # Note that it can happen that a script initializer throws an error, because of an asset issue.
         # That's why we also check for updated assets here, and not only scripts.
-        is_any_script_updated = self.content_manager.is_any_script_updated()
-        is_any_asset_updated = self.content_manager.is_any_asset_updated()
-        is_any_content_updated = is_any_script_updated or is_any_asset_updated
-        return self.has_init_problem and not is_any_content_updated
+        is_any_script_updated = self.content_manager.is_any_script_modified
+        is_any_asset_updated = self.content_manager.is_any_asset_modified
+        is_no_content_updated = ( not is_any_script_updated ) and ( not is_any_asset_updated )
+        return is_no_content_updated
 
     def _should_reinitialise( self ) -> bool:
         # if any script files are updated we require reinitialisation
-        return self.content_manager.is_any_script_updated()
+        return self.content_manager.is_any_script_modified
 
     def run(self) -> None:
         while self.alive:
             # dispatch all OS events
             self.dispatch_events()
+
+            # update the content manager,
+            # which will result in all file watchers being updated
+            # and all assets that require reloads, to be reloaded
+            self.content_manager.update_watches()
 
             if self._should_skip_tick():
                 continue
@@ -97,12 +105,12 @@ class GameWindow( pyglet.window.Window ):
             # Now that scripts have been handled,
             # we will try to reload assets (which is done only if they have been modified)
             reload_status = self.content_manager.try_reload_assets()
-            if reload_status == LoadStatus.FAILED :
+            if reload_status == ReloadStatus.FAILED :
                 logger.info( "Error occurred during asset loading. Game is now paused!" )
                 self.has_content_problem = True
                 continue
             else:
-                if reload_status == LoadStatus.RELOADED :
+                if reload_status == ReloadStatus.RELOADED :
                     self.has_content_problem = False
 
             if self.is_paused or self.has_content_problem:

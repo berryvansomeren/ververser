@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Callable
 
-from ververser.reloading_asset import ReloadingAsset, LoadStatus
+from ververser.reloading_asset import ReloadingAsset, ReloadStatus
 from ververser.entrypoint_wrapper import load_main_script, load_game_class, EntrypointWrapper
 from ververser.multi_file_watcher import MultiFileWatcher
 from ververser.script import load_script, Script
@@ -43,6 +43,9 @@ class ContentManager:
         self.asset_loaders : list[ tuple[ str, AssetLoaderType ] ] = []
         self.reloading_assets : list[ ReloadingAsset ] = []
 
+        self.is_any_asset_modified = False
+        self.is_any_script_modified = False
+
     # ======== Generic functions ========
 
     def make_path_complete( self, content_path : Path ) -> Path:
@@ -52,6 +55,19 @@ class ContentManager:
     def exists( self, asset_path ) -> bool:
         complete_asset_path = self.make_path_complete( asset_path )
         return complete_asset_path.is_file()
+
+    def update_watches( self ) -> None:
+        for reloading_asset in self.reloading_assets:
+            reloading_asset.update_watch()
+
+        self.is_any_asset_modified = False
+        for reloading_asset in self.reloading_assets:
+            if reloading_asset.is_modified():
+                self.is_any_asset_modified = True
+                break
+
+        self.script_watcher.update()
+        self.is_any_script_modified = self.script_watcher.is_modified()
 
     # ======== Asset related functions ========
 
@@ -71,20 +87,14 @@ class ContentManager:
         self.reloading_assets.append( reloading_asset )
         return reloading_asset
 
-    def is_any_asset_updated( self ) -> bool :
-        for reloading_asset in self.reloading_assets :
-            if reloading_asset.is_modified() :
-                return True
-        return False
-
-    def try_reload_assets( self ) -> LoadStatus :
-        overall_load_status = LoadStatus.NOT_CHANGED
+    def try_reload_assets( self ) -> ReloadStatus :
+        overall_load_status = ReloadStatus.NOT_CHANGED
         for reloading_asset in self.reloading_assets :
             reload_status = reloading_asset.try_reload()
-            if reload_status == LoadStatus.RELOADED :
-                overall_load_status = LoadStatus.RELOADED
-            if reload_status == LoadStatus.FAILED :
-                return LoadStatus.FAILED
+            if reload_status == ReloadStatus.RELOADED :
+                overall_load_status = ReloadStatus.RELOADED
+            if reload_status == ReloadStatus.FAILED :
+                return ReloadStatus.FAILED
         return overall_load_status
 
     def register_asset_loader( self, postfix: str, f_load_asset: AssetLoaderType ) -> None :
@@ -102,9 +112,6 @@ class ContentManager:
 
     def is_script_path( self, content_path ):
         return content_path.endswith( EXPECTED_SCRIPT_EXTENSION )
-
-    def is_any_script_updated( self ) -> bool:
-        return self.script_watcher.is_any_file_modified()
 
     def load_entrypoint_wrapper( self, game_window ) -> EntrypointWrapper:
 

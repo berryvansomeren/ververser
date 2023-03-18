@@ -1,38 +1,33 @@
 import logging
 from pathlib import Path
-from ververser.file_watcher import FileWatcher
+from ververser.file_watcher import FileWatcher, FileStatus
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger( __name__ )
 
 
-class MultiFileWatcher:
+class MultiFileWatcher :
 
-    def __init__( self, name : str = "<not set>" ):
+    def __init__( self, name: str = "<not set>" ) :
         self.name = name
-        self.file_watchers : list[ FileWatcher ] = []
-        self.last_seen_time_modified : float = 0
+        self.file_watchers: list[ FileWatcher ] = [ ]
+        self.status = FileStatus.NOT_CHANGED
 
-    def clear( self ) -> None:
-        self.file_watchers = []
+    def add_file_watch( self, file_path: Path ) -> None :
+        self.file_watchers.append( FileWatcher( file_path ) )
 
-    def add_file_watch( self, file_path : Path ) -> None:
-        new_file_watcher = FileWatcher( file_path )
-        self.file_watchers.append( new_file_watcher )
-        self.last_seen_time_modified = max( self.last_seen_time_modified, new_file_watcher.get_last_time_modified() )
+    def clear( self ) -> None :
+        self.file_watchers = [ ]
 
-    def get_last_time_modified( self ) -> float:
-        if not self.file_watchers:
-            return 0
-        all_modification_times = [ file_watcher.get_last_time_modified() for file_watcher in self.file_watchers ]
-        modification_time = max( all_modification_times )
-        return modification_time
+    def update( self ) -> None:
+        for file_watcher in self.file_watchers:
+            file_watcher.update()
 
-    def is_any_file_modified( self ) -> bool:
-        last_time_modified = self.get_last_time_modified()
-        is_updated = False
-        if last_time_modified != self.last_seen_time_modified:
-            is_updated = True
-            self.last_seen_time_modified = last_time_modified
-            logger.info( f'MultiFileWatcher with name "{self.name}" was updated - Timestamp: {self.last_seen_time_modified}' )
-        return is_updated
+        for file_watcher in self.file_watchers:
+            if file_watcher.status == FileStatus.MODIFIED:
+                self.status = FileStatus.MODIFIED
+                return
+        self.status = FileStatus.NOT_CHANGED
+
+    def is_modified( self ) -> bool:
+        return self.status == FileStatus.MODIFIED

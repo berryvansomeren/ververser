@@ -1,23 +1,30 @@
+from enum import Enum, auto
 import os.path
 from pathlib import Path
 
 
+class FileStatus( Enum ):
+    NOT_CHANGED = auto()
+    MODIFIED = auto()
+
+
 class FileWatcher:
 
-    def __init__( self, file_path: Path, record_now = True ):
+    def __init__( self, file_path: Path ):
         self.file_path = file_path
-        if record_now:
-            self.last_seen_time_modified = self.get_last_time_modified()
-        else:
-            self.last_seen_time_modified = 0
+        self.last_seen_time_modified = self._get_time_modified()
 
-    def get_last_time_modified( self ) -> float:
+    def _get_time_modified( self ) -> float:
         return os.path.getmtime( self.file_path )
 
-    def is_file_modified( self ) -> bool:
-        last_time_modified = self.get_last_time_modified()
-        return last_time_modified != self.last_seen_time_modified
+    def update( self ) -> None:
+        currently_seen_time_modified = self._get_time_modified()
+        if currently_seen_time_modified > self.last_seen_time_modified:
+            self.status = FileStatus.MODIFIED
+        else:
+            self.status = FileStatus.NOT_CHANGED
 
-    def update_last_seen_time_modified( self ):
-        last_time_modified = self.get_last_time_modified()
-        self.last_seen_time_modified = last_time_modified
+        self.last_seen_time_modified = currently_seen_time_modified
+
+    def is_modified( self ) -> bool:
+        return self.status == FileStatus.MODIFIED
