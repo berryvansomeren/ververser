@@ -138,6 +138,7 @@ class GameWindow( pyglet.window.Window ):
     # ---------------- Functions that wrap standard game hooks  ----------------
 
     def _init( self ) -> None:
+        logger.info( 'Game is being initialised' )
         success = self.try_invoke( self.init, 'Game Init' )
         if not success:
             self.has_init_problem = True
