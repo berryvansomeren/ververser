@@ -15,15 +15,31 @@ Ververser is available via PyPI:
 pip install ververser
 ```
 
+## Examples
+Curious what working with ververser looks like?
+
+Ververser comes with a few examples that can be found in _ververser/examples_. 
+Every example comes with its own readme, explaining things from a minimal setup, 
+to how scripts can be imported in such a way that they will be properly reloaded on changes. 
+Just run an example, and start changing the code of the example, while running, to see how content will be reloaded. 
+
+Another example of what can be achieved with ververser is [**speelgrond**](https://github.com/berryvansomeren/speelgrond)
+
 ## Assets  
 Assets can be anything ranging from textures, to meshes and shaders. 
 If an asset is modified, the file will be hot-reloaded while the app keeps running. 
-It is also easy to register custom asset classes with the content manager by registering a file path suffix with an associated loader function. 
+It is also easy to register custom asset classes with the content manager by registering a file path suffix 
+with an associated custom loader function. 
 Note that asset loaders that are registered later, overrule earlier registered ones.
 
 ## Scripts
-The **MainScript** class supports entrypoints for game applications through **vvs_init**, **vvs_update**, **vvs_draw** and **vvs_exit**.
-These functions will be called by the ververser host at the right moments in the game loop.
+Ververser supports two ways of defining entrypoints for your application. 
+These entrypoints will be called by the ververser host at the right moments in the game loop.
+You could define a **main.py** file with hooks for game applications through **vvs_init**, **vvs_update**, **vvs_draw** and **vvs_exit**.
+Instead of defining these hooks as free functions, one could also choose to define a **VVSGame** class in a **game.py** file, 
+which will be instantiated, managed and invoked by ververser. 
+In this case your class can implement vvs_update, vvs_draw and vvs_exit. 
+However, in this case there is no vvs_init hook, as the class's initializer fulfills that role instead. 
 
 ### Why we bypass Python's internal import mechanics
 There are a few issues when trying to reload modules in Python. 
@@ -68,18 +84,11 @@ If you want to preserve some state between reloads,
 you could consider writing state to file in vvs_exit, and reading it back in, in vvs_init. 
 By managing script reloads as described in the previous section you can also minimize the amount of lost state.
 
-### Some notes on exit errors
+### Some closing remarks on exit errors
 Note that there is no way to recover from errors in vvs_exit, 
 as the code can not be hot-reloaded while keeping state, 
 if your custom mechanism that is responsible for preserving state, is the thing that crashes...
 So, in that case, the app is simply reloaded, and you will lose your state.
 Also note that when you feel you might have fixed your issue in the vvs_exit call, 
 the error might still be logged, because on reload, the previously defined version of vvs_exit is called, 
-as your new code is not loaded yet. 
-
-## Examples
-Ververser comes with a few examples that can be found in _ververser/examples_. 
-Every example comes with its own readme, explaining things from a minimal setup, 
-to how scripts can be imported in such a way that they will be properly reloaded on changes.
-
-Another example of what can be achieved with ververser is [**speelgrond**](https://github.com/berryvansomeren/speelgrond)
+as your new code is not loaded yet (but will be on the next game "tick"). 
