@@ -8,9 +8,9 @@ def make_game_window( content_folder_path : Path ) -> GameWindow:
     return GameWindow( content_folder_path = content_folder_path )
 
 
-def host_this_folder( f_make_window = make_game_window ) -> None:
+def host_this_folder( f_make_window = make_game_window, n_frames_back = 1 ) -> None:
     # Determine the path of the file in which we invoked this function
-    call_site_frame_info = inspect.stack()[ 1 ]
+    call_site_frame_info = inspect.stack()[ n_frames_back ]
     call_site_frame = call_site_frame_info[ 0 ]
     call_site_module = inspect.getmodule( call_site_frame )
     call_site_module_path = call_site_module.__file__
