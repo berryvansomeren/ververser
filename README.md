@@ -9,7 +9,7 @@ All you need to do is save your changes.
 This makes the development workflow faster as you do not have to restart the entire app every time an asset is changed. 
 This is especially useful for creative coding. 
 
-Ververser is available via PyPI:
+Ververser is available via [PyPI](https://pypi.org/project/ververser/):
 
 ```
 pip install ververser
