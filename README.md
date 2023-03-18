@@ -32,11 +32,11 @@ It is also easy to register custom asset classes with the content manager by reg
 with an associated custom loader function. 
 Note that asset loaders that are registered later, overrule earlier registered ones.
 
-## Scripts
+## Entrypoints
 Ververser supports two ways of defining entrypoints for your application. 
 These entrypoints will be called by the ververser host at the right moments in the game loop.
-You could define a **main.py** file with hooks for game applications through **vvs_init**, **vvs_update**, **vvs_draw** and **vvs_exit**.
-Instead of defining these hooks as free functions, one could also choose to define a **VVSGame** class in a **game.py** file, 
+You could define a **vvs_main.py** file with hooks for game applications through **vvs_init**, **vvs_update**, **vvs_draw** and **vvs_exit**.
+Instead of defining these hooks as free functions, one could also choose to define a **VVSGame** class in a **vvs_game.py** file, 
 which will be instantiated, managed and invoked by ververser. 
 In this case your class can implement vvs_update, vvs_draw and vvs_exit. 
 However, in this case there is no vvs_init hook, as the class's initializer fulfills that role instead. 
