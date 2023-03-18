@@ -1,5 +1,5 @@
 from ververser.global_game_window import get_global_game_window
-from ververser.script import Script, load_script
+from ververser.script import Script
 from ververser.reloading_asset import ReloadingAsset
 
 
