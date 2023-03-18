@@ -17,7 +17,13 @@ logger = logging.getLogger(__name__)
 
 class GameWindow( pyglet.window.Window ):
 
-    def __init__( self, content_folder_path : Path, max_fps = 60, max_catchup_updates = 5, **kwargs ):
+    def __init__( self,
+            content_folder_path : Path,
+            max_fps = 60,
+            max_catchup_updates = 0,
+            continuous_catchup = False,
+            **kwargs
+    ):
         super().__init__( vsync = False, **kwargs )
 
         self.target_fps = max_fps
@@ -25,7 +31,8 @@ class GameWindow( pyglet.window.Window ):
         self.frame_time = 1 / self.target_fps
         self.game_stepper = GameStepper(
             frame_time = self.frame_time,
-            max_catchup_updates = max_catchup_updates
+            max_catchup_updates = max_catchup_updates,
+            continuous_catchup = continuous_catchup
         )
 
         self.alive = True

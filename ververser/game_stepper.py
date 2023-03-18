@@ -3,9 +3,10 @@ from ververser.timer import Timer
 
 class GameStepper:
 
-    def __init__( self, frame_time, max_catchup_updates ):
+    def __init__( self, frame_time, max_catchup_updates : int, continuous_catchup : bool ):
         self.frame_time = frame_time
-        self.max_updates = max_catchup_updates
+        self.max_updates = 1 + max_catchup_updates
+        self.continuous_catchup = continuous_catchup
 
         self.update_timer = Timer()
         self.remaining_time_to_consume = 0
@@ -34,4 +35,6 @@ class GameStepper:
             self.remaining_time_to_consume -= self.frame_time
             self.n_updates += 1
             return True
+        if not self.continuous_catchup and self.n_updates == self.max_updates:
+            self.remaining_time_to_consume = 0
         return False
