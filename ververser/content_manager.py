@@ -38,7 +38,7 @@ class ContentManager:
     We also separate the step from checking whether files have been updated,
     from the step where they are actually reloaded.
     This is because depending on what kind of file has changed,
-    a different type of reload might be performed. 
+    a different type of reload might be performed.
     """
 
     def __init__( self, content_folder_path : Path ):
