@@ -1,6 +1,6 @@
 # Ververser
 
-**Ververser is a lightweight wrapper around pyglet that allows hot-reloading of content.** 
+**Ververser is a lightweight wrapper around pyglet that performs hot-reloading of content.** 
 
 When your app is running, changes to content will automatically be hot-reloaded.
 If an error occurs, the app is automatically paused, 
