@@ -34,6 +34,11 @@ class ContentManager:
     Because scripts are dealt with separately,
     we will make a hard distinction between these two categories,
     and refer to non-script content as "assets".
+
+    We also separate the step from checking whether files have been updated,
+    from the step where they are actually reloaded.
+    This is because depending on what kind of file has changed,
+    a different type of reload might be performed. 
     """
 
     def __init__( self, content_folder_path : Path ):

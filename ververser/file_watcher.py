@@ -23,7 +23,6 @@ class FileWatcher:
             self.status = FileStatus.MODIFIED
         else:
             self.status = FileStatus.NOT_CHANGED
-
         self.last_seen_time_modified = currently_seen_time_modified
 
     def is_modified( self ) -> bool:
