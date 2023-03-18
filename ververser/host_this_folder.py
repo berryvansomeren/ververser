@@ -1,9 +1,14 @@
 import inspect
 from pathlib import Path
-from ververser.make_global_game_window import make_global_game_window
+from ververser.game_window import GameWindow
+from ververser.global_game_window import set_global_game_window
 
 
-def host_this_folder() -> None:
+def make_game_window( content_folder_path : Path ) -> GameWindow:
+    return GameWindow( content_folder_path = content_folder_path )
+
+
+def host_this_folder( f_make_window = make_game_window ) -> None:
     # Determine the path of the file in which we invoked this function
     call_site_frame_info = inspect.stack()[ 1 ]
     call_site_frame = call_site_frame_info[ 0 ]
@@ -12,5 +17,6 @@ def host_this_folder() -> None:
     call_site_folder_path = Path( call_site_module_path ).parent
 
     # Run the game, using the invocation folder as entrypoint
-    game = make_global_game_window( call_site_folder_path )
-    game.run()
+    game_window = f_make_window( call_site_folder_path )
+    set_global_game_window( game_window )
+    game_window.run()

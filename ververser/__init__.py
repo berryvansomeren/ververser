@@ -8,7 +8,6 @@ from .host_this_folder import host_this_folder
 from .import_script import import_script
 from .keyboard import Keyboard
 from .entrypoint_wrapper import MainScript
-from .make_global_game_window import make_global_game_window
 from .mouse import Mouse
 from .multi_file_watcher import MultiFileWatcher
 from .reloading_asset import ReloadingAsset, ReloadStatus
