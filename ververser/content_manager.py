@@ -128,16 +128,14 @@ class ContentManager:
             EXPECTED_GAME_SCRIPT_NAME : load_game_class,
         }
 
-        absolute_entrypoint_path = None
         entrypoint_wrapper = None
         for wrapper_name, f_load in entry_point_wrappers.items():
             if self.exists( wrapper_name ) :
                 absolute_entrypoint_path = self.make_path_complete( wrapper_name )
+                self.script_watcher.add_file_watch( absolute_entrypoint_path )
                 entrypoint_wrapper = f_load( absolute_entrypoint_path, game_window )
                 break
         assert entrypoint_wrapper, 'Could not find entrypoints'
-
-        self.script_watcher.add_file_watch( absolute_entrypoint_path )
         return entrypoint_wrapper
 
     def load_script( self, script_path : Path, reinit_on_mod = True ) -> Script | ReloadingAsset:
