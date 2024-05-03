@@ -1,5 +1,7 @@
 # Ververser
 
+**Also see my blogpost [HERE](https://www.berryvansomeren.com/posts/speelgrond)!** :sparkles:
+
 **Ververser is a lightweight wrapper around pyglet that performs hot-reloading of content.** 
 
 When your app is running, changes to content will automatically be hot-reloaded.
